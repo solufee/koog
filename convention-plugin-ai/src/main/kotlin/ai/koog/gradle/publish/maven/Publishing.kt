@@ -12,6 +12,7 @@ object Publishing {
         publishTo({
             it.graziePublic(project)
             it.artifactsMaven(project)
+            it.solufeeGitHubPackages(project)
         }) {
             // Use configureEach so that publications added lazily by AGP (e.g. the Android
             // release variant) also get POM metadata. An eager forEach would miss them because
@@ -88,6 +89,29 @@ object Publishing {
 
                 repo.name = "artifacts"
                 repo.url = project.rootProject.layout.buildDirectory.dir("artifacts/maven").get().asFile.toURI()
+            }
+        )
+    }
+
+    private fun RepositoryHandler.solufeeGitHubPackages(project: Project) {
+        maven(
+            Action {
+                val repo = this
+
+                repo.name = "GitHubPackages"
+                repo.url = URL("https://maven.pkg.github.com/solufee/koog").toURI()
+
+                repo.credentials(
+                    Action {
+                        val cred = this
+
+                        cred.username = project.properties["gpr.user"]?.toString()
+                            ?: System.getenv("GITHUB_ACTOR")
+
+                        cred.password = project.properties["gpr.key"]?.toString()
+                            ?: System.getenv("GITHUB_TOKEN")
+                    }
+                )
             }
         )
     }

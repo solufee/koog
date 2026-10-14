@@ -24,8 +24,11 @@ version = run {
         val branch = System.getenv("BRANCH_KOOG_IS_RELEASING_FROM")
         val customVersion = System.getenv("CE_CUSTOM_VERSION")
         val tcCounter = System.getenv("TC_BUILD_COUNTER")
+        val solufeeRelease = findProperty("solufee.release")?.toString()?.toBoolean() ?: false
 
-        if (nightlyBuild) {
+        if (solufeeRelease) {
+            "-solufee.${property("solufee.number")}"
+        } else if (nightlyBuild) {
             if (branch != "develop") {
                 throw GradleException("Nightly builds are allowed only from the develop branch")
             }
