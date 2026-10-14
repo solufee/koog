@@ -27,6 +27,16 @@ It supports JVM and JS targets and integrates with multiple LLM providers
 - Maven 产物发布到 GitHub Packages（`https://maven.pkg.github.com/solufee/koog`）。
 - 版本号 = 上游 koog 版本 + `-solufee.<number>`，例如 `2.0.1-solufee.1`。
 - `<number>` 在同一上游版本上的每次发布递增；上游 koog 版本更新后重置为 `1`。
+- 上游版本是 `gradle.properties` 中的 `version`，`<number>` 是同文件中的 `solufee.number`。
+- 只有加 `-Psolufee.release=true` 时才使用 solufee 版本号，否则仍是上游的 `-SNAPSHOT` 逻辑。
+- 发布需要带 `write:packages` 权限的 token。Gradle 自带的 8.x 不支持 JDK 25，请用 JDK 17/21：
+
+```bash
+JAVA_HOME=<jdk-21> \
+ORG_GRADLE_PROJECT_gpr.user=solufee \
+ORG_GRADLE_PROJECT_gpr.key="$(gh auth token -u solufee)" \
+./gradlew -Psolufee.release=true publishAllPublicationsToGitHubPackagesRepository
+```
 
 ## Project Structure
 
