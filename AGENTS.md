@@ -4,6 +4,40 @@ Koog is a Kotlin multiplatform framework for building AI agents with graph-based
 It supports JVM and JS targets and integrates with multiple LLM providers
 (OpenAI, Anthropic, Google, OpenRouter, Ollama) and Model Context Protocol (MCP).
 
+## Solufee Fork 工作流
+
+本仓库是 [JetBrains/koog](https://github.com/JetBrains/koog) 的 fork（`solufee/koog`）。
+
+- 操作 GitHub 前先执行 `gh auth switch --user solufee`。
+
+### 分支
+
+| 分支 | 用途 |
+|------|------|
+| `develop` | 始终与上游 `upstream/develop` 保持一致，**禁止**提交任何 solufee 自有改动 |
+| `solufee-develop` | 上游 + solufee 补丁，是我们的主开发分支 |
+| `solufee/feat/<name>`、`solufee/fix/<name>` | 单个补丁分支，从 `solufee-develop` 切出 |
+
+- 远程：`origin` = `solufee/koog`，`upstream` = `JetBrains/koog`。
+- 同步上游：`git fetch upstream`，将 `develop` 快进到 `upstream/develop` 并推送到 `origin`，再把 `develop` 合入 `solufee-develop`。
+- 每个补丁分支都以 **squash merge** 合并到 `solufee-develop`，一个补丁对应 `solufee-develop` 上的一个提交。
+
+### 版本与发布
+
+- Maven 产物发布到 GitHub Packages（`https://maven.pkg.github.com/solufee/koog`）。
+- 版本号 = 上游 koog 版本 + `-solufee.<number>`，例如 `2.0.1-solufee.1`。
+- `<number>` 在同一上游版本上的每次发布递增；上游 koog 版本更新后重置为 `1`。
+- 上游版本是 `gradle.properties` 中的 `version`，`<number>` 是同文件中的 `solufee.number`。
+- 只有加 `-Psolufee.release=true` 时才使用 solufee 版本号，否则仍是上游的 `-SNAPSHOT` 逻辑。
+- 发布需要带 `write:packages` 权限的 token。Gradle 自带的 8.x 不支持 JDK 25，请用 JDK 17/21：
+
+```bash
+JAVA_HOME=<jdk-21> \
+ORG_GRADLE_PROJECT_gpr.user=solufee \
+ORG_GRADLE_PROJECT_gpr.key="$(gh auth token -u solufee)" \
+./gradlew -Psolufee.release=true publishAllPublicationsToGitHubPackagesRepository
+```
+
 ## Project Structure
 
 The project follows a modular architecture with a clear separation of concerns:
@@ -229,6 +263,8 @@ export OPEN_ROUTER_API_TEST_KEY=your_key_here
 ## Development Workflow
 
 ### Branch Strategy
+
+> 以下是上游 JetBrains 的分支策略。在 solufee fork 中开发时，以上文「Solufee Fork 工作流」为准。
 
 - **develop**: All development (features and bug fixes)
 - **main**: Released versions only
